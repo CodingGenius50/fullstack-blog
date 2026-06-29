@@ -13,10 +13,12 @@ from rest_framework.response import Response
 from .models import Blog,Like
 from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
+
+from rest_framework.permissions import IsAuthenticated, AllowAny
+
 class BlogListCreateView(generics.ListCreateAPIView):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
-    permission_classes = [IsAuthenticated]
 
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
@@ -24,11 +26,17 @@ class BlogListCreateView(generics.ListCreateAPIView):
     search_fields = ['title', 'content']
     ordering_fields = ['created_at', 'title']
 
+    def get_permissions(self):
+        if self.request.method == "POST":
+            return [IsAuthenticated()]
+        return [AllowAny()]
+
     def get_serializer_context(self):
-        return {'request': self.request}
+        return {"request": self.request}
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
+
 
 
 
