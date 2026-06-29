@@ -29,10 +29,16 @@ function CreateBlog() {
       setImage(null);
 
       navigate("/");
-    } catch (error) {
-      console.log(error);
-      alert("Failed to create blog");
-    }
+
+      
+    } 
+    catch (error) {
+  console.log("ERROR:", error);
+  console.log("STATUS:", error.response?.status);
+  console.log("DATA:", error.response?.data);
+
+  alert("Failed to create blog");
+}
   };
 
   return (
