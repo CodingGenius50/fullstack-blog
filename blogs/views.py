@@ -17,7 +17,7 @@ from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class BlogListCreateView(generics.ListCreateAPIView):
-    queryset = Blog.objects.all()
+    queryset = Blog.objects.all().order_by("-id")
     serializer_class = BlogSerializer
 
     parser_classes = [MultiPartParser, FormParser, JSONParser]
