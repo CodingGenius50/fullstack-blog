@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Blog, Comment, Like,Bookmark
+from .models import Blog, Comment, Like, Bookmark
 
 
 class BlogSerializer(serializers.ModelSerializer):
@@ -9,9 +9,23 @@ class BlogSerializer(serializers.ModelSerializer):
     comments_count = serializers.SerializerMethodField()
     is_bookmarked = serializers.SerializerMethodField()
 
+    # ✅ SAFE IMAGE HANDLING (IMPORTANT FIX)
+    image = serializers.SerializerMethodField()
+
     class Meta:
         model = Blog
         fields = '__all__'
+
+    def get_image(self, obj):
+        """
+        Prevents 500 error if image is missing/corrupt
+        """
+        try:
+            if obj.image:
+                return obj.image.url
+        except Exception:
+            return None
+        return None
 
     def get_likes_count(self, obj):
         return obj.likes.count()
@@ -20,16 +34,14 @@ class BlogSerializer(serializers.ModelSerializer):
         return obj.comments.count()
 
     def get_is_bookmarked(self, obj):
-        user = self.context['request'].user
+        request = self.context.get('request')
 
-        if user.is_anonymous:
+        if not request or request.user.is_anonymous:
             return False
 
-        return obj.bookmarks.filter(user=user).exists()
-    
-    
-    
-    
+        return obj.bookmarks.filter(user=request.user).exists()
+
+
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
@@ -42,8 +54,7 @@ class LikeSerializer(serializers.ModelSerializer):
         model = Like
         fields = '__all__'
         read_only_fields = ['user']
-        
-from .models import Bookmark
+
 
 class BookmarkSerializer(serializers.ModelSerializer):
     class Meta:
