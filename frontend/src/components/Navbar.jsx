@@ -11,6 +11,7 @@ function Navbar() {
   return (
     <nav className="bg-slate-900 shadow-lg sticky top-0 z-50">
       <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+
         <NavLink
           to="/"
           className="text-2xl font-bold text-blue-400"
@@ -19,12 +20,21 @@ function Navbar() {
         </NavLink>
 
         <div className="flex items-center gap-6">
+
           <NavLink to="/" className={linkClass}>
             Blogs
           </NavLink>
 
           <NavLink to="/create-blog" className={linkClass}>
             Create
+          </NavLink>
+
+          <NavLink to="/profile" className={linkClass}>
+            Profile
+          </NavLink>
+
+          <NavLink to="/dashboard" className={linkClass}>
+            Dashboard
           </NavLink>
 
           <NavLink to="/login" className={linkClass}>
@@ -34,7 +44,9 @@ function Navbar() {
           <NavLink to="/register" className={linkClass}>
             Register
           </NavLink>
+
         </div>
+
       </div>
     </nav>
   );
