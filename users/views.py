@@ -10,6 +10,11 @@ class RegisterView(generics.CreateAPIView):
     
 
     
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from .serializers import RegisterSerializer, ProfileSerializer
+from .models import User
+
 class ProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated]
