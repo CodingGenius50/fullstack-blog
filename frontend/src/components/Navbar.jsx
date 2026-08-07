@@ -1,12 +1,31 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 function Navbar() {
+  const navigate = useNavigate();
+
+  const token = localStorage.getItem("access");
+
   const linkClass = ({ isActive }) =>
     `transition font-medium ${
       isActive
         ? "text-blue-400"
         : "text-white hover:text-blue-400"
     }`;
+const handleLogout = () => {
+  const confirmLogout = window.confirm(
+    "Are you sure you want to logout?"
+  );
+
+  if (!confirmLogout) return;
+
+  localStorage.removeItem("access");
+  localStorage.removeItem("refresh");
+
+  alert("Logged out successfully!");
+
+  navigate("/login");
+};
+
 
   return (
     <nav className="bg-slate-900 shadow-lg sticky top-0 z-50">
@@ -25,25 +44,40 @@ function Navbar() {
             Blogs
           </NavLink>
 
-          <NavLink to="/create-blog" className={linkClass}>
-            Create
-          </NavLink>
+          {token && (
+            <>
+              <NavLink to="/create-blog" className={linkClass}>
+                Create
+              </NavLink>
 
-          <NavLink to="/profile" className={linkClass}>
-            Profile
-          </NavLink>
+              <NavLink to="/profile" className={linkClass}>
+                Profile
+              </NavLink>
 
-          <NavLink to="/dashboard" className={linkClass}>
-            Dashboard
-          </NavLink>
+              <NavLink to="/dashboard" className={linkClass}>
+                Dashboard
+              </NavLink>
+            </>
+          )}
 
-          <NavLink to="/login" className={linkClass}>
-            Login
-          </NavLink>
+          {!token ? (
+            <>
+              <NavLink to="/login" className={linkClass}>
+                Login
+              </NavLink>
 
-          <NavLink to="/register" className={linkClass}>
-            Register
-          </NavLink>
+              <NavLink to="/register" className={linkClass}>
+                Register
+              </NavLink>
+            </>
+          ) : (
+            <button
+              onClick={handleLogout}
+              className="text-white hover:text-red-400 font-medium transition"
+            >
+              Logout
+            </button>
+          )}
 
         </div>
 
