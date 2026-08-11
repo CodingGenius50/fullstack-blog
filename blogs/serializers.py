@@ -8,8 +8,10 @@ class BlogSerializer(serializers.ModelSerializer):
     likes_count = serializers.SerializerMethodField()
     comments_count = serializers.SerializerMethodField()
     is_bookmarked = serializers.SerializerMethodField()
-    image = serializers.SerializerMethodField()
-
+    image = serializers.ImageField(
+    required=False,
+    allow_null=True
+)
     class Meta:
         model = Blog
         fields = '__all__'

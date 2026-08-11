@@ -2,9 +2,7 @@ import { Link } from "react-router-dom";
 import api from "../api/axios";
 
 function BlogCard({ blog }) {
-
   const handleDelete = async () => {
-
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this blog?"
     );
@@ -17,22 +15,34 @@ function BlogCard({ blog }) {
       alert("Blog deleted successfully!");
 
       window.location.reload();
-
     } catch (error) {
       console.log(error);
-
       alert("Failed to delete blog");
     }
   };
 
+ 
+  const imageUrl = blog.image
+  ? blog.image.startsWith("http")
+    ? blog.image
+    : `https://fullstack-blog-api-ht79.onrender.com${blog.image}`
+  : null;
+
+console.log("IMAGE:", blog.image);
+console.log("IMAGE URL:", imageUrl);
+
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden mb-8 hover:-translate-y-1">
 
-      {blog.image && (
+      {imageUrl && (
         <img
-          src={blog.image}
+           src={blog.image}
           alt={blog.title}
           className="w-full h-64 object-cover"
+          onError={(e) => {
+            console.log("Image failed to load:", imageUrl);
+            e.currentTarget.style.display = "none";
+          }}
         />
       )}
 
@@ -79,7 +89,6 @@ function BlogCard({ blog }) {
         </div>
 
       </div>
-
     </div>
   );
 }

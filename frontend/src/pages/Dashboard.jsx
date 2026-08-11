@@ -10,21 +10,35 @@ function Dashboard() {
     // eslint-disable-next-line react-hooks/immutability
     fetchDashboard();
   }, []);
+  
 
   const fetchDashboard = async () => {
-    try {
-      const blogsRes = await api.get("my-blogs/");
-      const bookmarksRes = await api.get("my-bookmarks/");
+  try {
+    const blogsRes = await api.get("my-blogs/");
+    const bookmarksRes = await api.get("my-bookmarks/");
 
-      setMyBlogs(blogsRes.data);
-      setBookmarks(bookmarksRes.data);
-    } catch (error) {
-      console.log(error);
-      alert("Failed to load dashboard");
-    } finally {
-      setLoading(false);
-    }
-  };
+    console.log("BLOGS:", blogsRes.data);
+    console.log("BOOKMARKS:", bookmarksRes.data);
+
+    const blogs = Array.isArray(blogsRes.data)
+      ? blogsRes.data
+      : blogsRes.data.results || [];
+
+    const bookmarks = Array.isArray(bookmarksRes.data)
+      ? bookmarksRes.data
+      : bookmarksRes.data.results || [];
+
+    setMyBlogs(blogs);
+    setBookmarks(bookmarks);
+
+  } catch (error) {
+    console.log(error);
+    alert("Failed to load dashboard");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const totalBlogs = myBlogs.length;
 
