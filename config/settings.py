@@ -53,7 +53,7 @@ INSTALLED_APPS = [
     'users',
     'blogs',
     'django_filters',
-    'corsheaders'
+    'corsheaders',
     'cloudinary',
     'cloudinary_storage',
 
