@@ -3,42 +3,33 @@ import api from "../api/axios";
 
 function Dashboard() {
   const [myBlogs, setMyBlogs] = useState([]);
-  const [bookmarks, setBookmarks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/immutability
     fetchDashboard();
   }, []);
-  
 
   const fetchDashboard = async () => {
-  try {
-    const blogsRes = await api.get("my-blogs/");
-    const bookmarksRes = await api.get("my-bookmarks/");
+    try {
+      const blogsRes = await api.get("my-blogs/");
 
-    console.log("BLOGS:", blogsRes.data);
-    console.log("BOOKMARKS:", bookmarksRes.data);
+      console.log("MY BLOGS:", blogsRes.data);
 
-    const blogs = Array.isArray(blogsRes.data)
-      ? blogsRes.data
-      : blogsRes.data.results || [];
+      const blogs = Array.isArray(blogsRes.data)
+        ? blogsRes.data
+        : blogsRes.data.results || [];
 
-    const bookmarks = Array.isArray(bookmarksRes.data)
-      ? bookmarksRes.data
-      : bookmarksRes.data.results || [];
+      setMyBlogs(blogs);
+    } catch (error) {
+      console.log("Dashboard Error:", error);
+      alert("Failed to load dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    setMyBlogs(blogs);
-    setBookmarks(bookmarks);
-
-  } catch (error) {
-    console.log(error);
-    alert("Failed to load dashboard");
-  } finally {
-    setLoading(false);
-  }
-};
-
+  // ================= STATISTICS =================
 
   const totalBlogs = myBlogs.length;
 
@@ -52,7 +43,7 @@ function Dashboard() {
     0
   );
 
-  const totalBookmarks = bookmarks.length;
+  // ================= LOADING =================
 
   if (loading) {
     return (
@@ -62,41 +53,54 @@ function Dashboard() {
     );
   }
 
+  // ================= DASHBOARD =================
+
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
 
       <div className="max-w-6xl mx-auto">
 
+        {/* ================= TITLE ================= */}
+
         <h1 className="text-4xl font-bold text-center text-blue-600 mb-10">
           Dashboard
         </h1>
 
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+        {/* ================= STATISTICS ================= */}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+
+          {/* TOTAL BLOGS */}
 
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-gray-500">Total Blogs</h2>
+            <h2 className="text-gray-500 font-semibold">
+              Total Blogs
+            </h2>
+
             <p className="text-4xl font-bold text-blue-600 mt-3">
               {totalBlogs}
             </p>
           </div>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-gray-500">Bookmarks</h2>
-            <p className="text-4xl font-bold text-green-600 mt-3">
-              {totalBookmarks}
-            </p>
-          </div>
+          {/* TOTAL LIKES */}
 
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-gray-500">Total Likes</h2>
+            <h2 className="text-gray-500 font-semibold">
+              Total Likes
+            </h2>
+
             <p className="text-4xl font-bold text-red-600 mt-3">
               {totalLikes}
             </p>
           </div>
 
+          {/* TOTAL COMMENTS */}
+
           <div className="bg-white rounded-xl shadow-lg p-6">
-            <h2 className="text-gray-500">Comments</h2>
+            <h2 className="text-gray-500 font-semibold">
+              Total Comments
+            </h2>
+
             <p className="text-4xl font-bold text-purple-600 mt-3">
               {totalComments}
             </p>
@@ -104,7 +108,8 @@ function Dashboard() {
 
         </div>
 
-        {/* My Blogs */}
+        {/* ================= MY BLOGS ================= */}
+
         <div className="bg-white rounded-xl shadow-lg p-8">
 
           <h2 className="text-2xl font-bold mb-6">
@@ -112,17 +117,25 @@ function Dashboard() {
           </h2>
 
           {myBlogs.length === 0 ? (
-            <p className="text-gray-500">
-              No blogs available.
-            </p>
+
+            <div className="text-center py-10">
+              <p className="text-gray-500 text-lg">
+                No blogs available.
+              </p>
+            </div>
+
           ) : (
+
             <div className="space-y-6">
 
               {myBlogs.map((blog) => (
+
                 <div
                   key={blog.id}
                   className="border rounded-xl p-5 flex flex-col md:flex-row gap-5 items-center"
                 >
+
+                  {/* BLOG IMAGE */}
 
                   {blog.image && (
                     <img
@@ -132,26 +145,34 @@ function Dashboard() {
                     />
                   )}
 
+                  {/* BLOG INFORMATION */}
+
                   <div className="flex-1">
 
-                    <h3 className="text-xl font-bold">
+                    <h3 className="text-xl font-bold text-gray-800">
                       {blog.title}
                     </h3>
 
                     <div className="flex gap-6 mt-3 text-gray-600">
 
-                      <span>❤️ {blog.likes_count}</span>
+                      <span>
+                        ❤️ {blog.likes_count || 0}
+                      </span>
 
-                      <span>💬 {blog.comments_count}</span>
+                      <span>
+                        💬 {blog.comments_count || 0}
+                      </span>
 
                     </div>
 
                   </div>
 
                 </div>
+
               ))}
 
             </div>
+
           )}
 
         </div>

@@ -10,9 +10,12 @@ function Blogs() {
   const [prevPage, setPrevPage] = useState(null);
   const [page, setPage] = useState(1);
 
+  // ================= FETCH BLOGS =================
   const fetchBlogs = (url = "blogs/") => {
     let endpoint = url;
 
+    // Convert old localhost pagination URL
+    // into relative API endpoint
     if (url.startsWith("http")) {
       endpoint = url.replace(
         "http://127.0.0.1:8000/api/",
@@ -20,41 +23,58 @@ function Blogs() {
       );
     }
 
-    api.get(endpoint)
+    api
+      .get(endpoint)
       .then((res) => {
-        setBlogs(res.data.results);
+        setBlogs(res.data.results || []);
         setNextPage(res.data.next);
         setPrevPage(res.data.previous);
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Fetch Blogs Error:", err);
       });
   };
 
+  // ================= SEARCH =================
   const handleSearch = () => {
-    api.get(`blogs/?search=${search}`)
+    api
+      .get(`blogs/?search=${search}`)
       .then((res) => {
-        setBlogs(res.data.results);
+        setBlogs(res.data.results || []);
         setNextPage(res.data.next);
         setPrevPage(res.data.previous);
         setPage(1);
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Search Error:", err);
       });
   };
 
+  // ================= INITIAL LOAD =================
   useEffect(() => {
     fetchBlogs();
   }, []);
 
+  // ================= UPDATE SINGLE BLOG =================
+  const handleBlogUpdate = (updatedBlog) => {
+    setBlogs((prevBlogs) =>
+      prevBlogs.map((item) =>
+        item.id === updatedBlog.id
+          ? updatedBlog
+          : item
+      )
+    );
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
 
+      {/* ================= TITLE ================= */}
       <h1 className="text-4xl font-bold text-center mb-8 text-slate-800">
         All Blogs
       </h1>
 
+      {/* ================= SEARCH ================= */}
       <div className="flex flex-col md:flex-row gap-3 mb-8">
 
         <input
@@ -79,6 +99,7 @@ function Blogs() {
 
         <button
           onClick={() => {
+            setSearch("");
             setPage(1);
             fetchBlogs();
           }}
@@ -89,10 +110,12 @@ function Blogs() {
 
       </div>
 
+      {/* ================= PAGE NUMBER ================= */}
       <h2 className="text-xl font-semibold mb-6">
         Page {page}
       </h2>
 
+      {/* ================= BLOG LIST ================= */}
       {blogs.length === 0 ? (
         <div className="text-center py-16">
           <h2 className="text-2xl font-semibold text-gray-500">
@@ -104,12 +127,15 @@ function Blogs() {
           <BlogCard
             key={blog.id}
             blog={blog}
+            onBlogUpdate={handleBlogUpdate}
           />
         ))
       )}
 
+      {/* ================= PAGINATION ================= */}
       <div className="flex justify-center gap-4 mt-10">
 
+        {/* Previous */}
         <button
           disabled={!prevPage}
           onClick={() => {
@@ -121,6 +147,7 @@ function Blogs() {
           Previous
         </button>
 
+        {/* Next */}
         <button
           disabled={!nextPage}
           onClick={() => {
